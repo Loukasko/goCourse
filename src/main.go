@@ -2,27 +2,33 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sort"
 	"sync"
 )
 
 func main() {
 	const numberOfSubroutines = 4
-	var x int
-	channels := make([]chan int, numberOfSubroutines)
+
 	var integerArray []int
+	var sortedArray []int
 	for {
-		fmt.Println("Type the next one . If you want to start sorting, type anything else than integer")
+		var x int
+		fmt.Println("Type a number to sort . If you want to stop type anything other than integer")
 		_, err := fmt.Scanf("%d", &x)
 		if err != nil {
 			break
 		}
 		integerArray = append(integerArray, x)
 	}
-	sortedArray := make([]int, len(integerArray))
-
 	if len(integerArray) == 0 {
 		fmt.Println("You need to type at least one integer")
+		os.Exit(1)
+	}
+
+	var channels [numberOfSubroutines]chan []int
+	for i := range channels {
+		channels[i] = make(chan []int)
 	}
 
 	wg := sync.WaitGroup{}
@@ -35,31 +41,28 @@ func main() {
 		}
 	}
 
-	wg.Wait()
 	for i := 0; i < numberOfSubroutines; i++ {
 		select {
 		case t, ok := <-channels[i]:
 			if ok {
-				sortedArray = append(sortedArray, t)
+				sortedArray = append(sortedArray, t...)
 			} else {
 				break
 			}
-		default:
-			fmt.Println("No value ready, moving on.")
 		}
 	}
+
+	wg.Wait()
+	sort.Ints(sortedArray)
 	fmt.Println(sortedArray)
 }
 
-func sortArray(arrayOfIntegers []int, wg *sync.WaitGroup, channel chan int) {
+func sortArray(arrayOfIntegers []int, wg *sync.WaitGroup, channel chan []int) {
 	fmt.Println("I will sort:", arrayOfIntegers)
 	defer func() {
 		close(channel)
 		wg.Done()
 	}()
 	sort.Ints(arrayOfIntegers)
-	for _, i := range arrayOfIntegers {
-		channel <- i
-	}
-	fmt.Println("I sorted:", arrayOfIntegers)
+	channel <- arrayOfIntegers
 }
