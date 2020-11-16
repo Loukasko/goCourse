@@ -77,31 +77,31 @@ func (h *host) listenAndGrantPermissions(requestPermissionChannels []chan string
 		select {
 		case <-requestPermissionChannels[0]:
 			if philosophersEatingConcurrently < maxNumberOfPhilosophersEatingConcurrently {
-				grantPermissionChannels[0] <- 0
+				grantPermissionChannels[0] <- 1
 			} else {
 				grantPermissionChannels[0] <- -1
 			}
 		case <-requestPermissionChannels[1]:
 			if philosophersEatingConcurrently < maxNumberOfPhilosophersEatingConcurrently {
-				grantPermissionChannels[1] <- 1
+				grantPermissionChannels[1] <- 2
 			} else {
 				grantPermissionChannels[1] <- -1
 			}
 		case <-requestPermissionChannels[2]:
 			if philosophersEatingConcurrently < maxNumberOfPhilosophersEatingConcurrently {
-				grantPermissionChannels[2] <- 2
+				grantPermissionChannels[2] <- 3
 			} else {
 				grantPermissionChannels[2] <- -1
 			}
 		case <-requestPermissionChannels[3]:
 			if philosophersEatingConcurrently < maxNumberOfPhilosophersEatingConcurrently {
-				grantPermissionChannels[3] <- 3
+				grantPermissionChannels[3] <- 4
 			} else {
 				grantPermissionChannels[3] <- -1
 			}
 		case <-requestPermissionChannels[4]:
 			if philosophersEatingConcurrently < maxNumberOfPhilosophersEatingConcurrently {
-				grantPermissionChannels[4] <- 4
+				grantPermissionChannels[4] <- 5
 			} else {
 				grantPermissionChannels[4] <- -1
 			}
